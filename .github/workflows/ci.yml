@@ -1,0 +1,41 @@
+name: CI/CD del Proyecto Web
+
+on:
+  push:
+    branches:
+      - master # Asegúrate de que esta sea el nombre de tu rama principal (main o master)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Simular validación de código
+        run: |
+          echo "Iniciando validación de código..."
+          # Verificar si index.html existe
+          if [ -f index.html ]; then
+            echo "✅ index.html encontrado."
+          else
+            echo "❌ Error: index.html no encontrado."
+            exit 1
+          fi
+          # Verificar si main.js existe
+          if [ -f main.js ]; then
+            echo "✅ main.js encontrado."
+          else
+            echo "❌ Error: main.js no encontrado."
+            exit 1
+          fi
+          echo "Validación de código completada. ¡Todo correcto!"
+
+      - name: Despliegue con GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/master' # Desplegar solo desde la rama master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ # Esto indica que el contenido a publicar está en la raíz de tu repositorio
+          cname: # Si tienes un dominio personalizado, ponlo aquí (ej: "tudominio.com")
